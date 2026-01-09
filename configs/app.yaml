@@ -1,0 +1,7 @@
+endpoints:
+  app: "http://localhost:8080/health"
+  metrics: "http://localhost:9100/metrics"
+backup:
+  src: /var/www
+  dest: /var/backups
+  schedule: daily

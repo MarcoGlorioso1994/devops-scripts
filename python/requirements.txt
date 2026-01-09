@@ -1,0 +1,3 @@
+requests
+PyYAML
+# add more dependencies as needed
