@@ -1,22 +1,42 @@
-# devops-scripts ✅
+# DevOps Scripts
 
-Collection of small operational scripts for backups, healthchecks, log rotation, and simple Python utilities for checks and analysis.
+## Overview
+Collection of small, focused operational scripts and Python utilities for common tasks such as backups, endpoint health checks, log rotation, and basic log analysis.
 
-Structure:
+## Architecture
+- Diagram: (optional — add diagram file or link)
+- Components:
+  - `bash/`: lightweight shell scripts for operational tasks
+  - `python/`: Python utilities for checks and analysis
+  - `configs/`: YAML configuration files used by scripts
 
+## Tech Stack
+- Shell: Bash
+- Language: Python 3.11
+- Tools: tar, gzip, curl, requests, PyYAML
+
+## How to Run (local)
+1. Make bash scripts executable:
+
+```bash
+chmod +x bash/*.sh
 ```
-devops-scripts/
-├── bash/
-├── python/
-├── configs/
-├── .gitignore
-└── README.md
+
+2. Install Python dependencies:
+
+```bash
+pip install -r python/requirements.txt
 ```
 
-Quick start:
+3. Edit configuration files in `configs/` (e.g., `app.yaml`) to fit your environment, then run the appropriate script.
 
-- Make bash scripts executable: `chmod +x bash/*.sh`
-- Install Python deps: `pip install -r python/requirements.txt`
-- Edit `configs/app.yaml` to match your environment.
+## CI/CD
+No CI/CD pipeline is configured by default. Recommended pipeline steps:
+1. Lint shell scripts (shellcheck) and Python (flake8/ruff)
+2. Run Python tests (`pytest`)
+3. Optionally build and publish artifacts or container images
 
-Contributions welcome — keep scripts small, reproducible and well-documented.
+## What I Learned
+- Keep scripts small and single-responsibility
+- Prefer explicit configuration files (YAML) over hard-coded values
+- Validate inputs and fail loudly in scripts for reliable automation
