@@ -1,15 +1,37 @@
-#!/usr/bin/env bash
-set -euo pipefail
-# healthcheck.sh - basic healthcheck for an HTTP endpoint
-# Usage: ./healthcheck.sh [URL]
+#!/bin/bash
 
-URL="${1:-http://localhost:8080/health}"
-HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || true)
+while getopts "s:p:l:" opt; do
+  case $opt in
+    s) SERVICE_NAME="$OPTARG" ;;
+    p) PORT="$OPTARG" ;;
+    l) LOG_DIR="$OPTARG" ;;
+    *)
+      echo "Usage: $0 -s service -p port -l log_dir"
+      exit 1
+      ;;
+  esac
+done
 
-if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-  echo "OK - ${URL} returned ${HTTP_STATUS}"
-  exit 0
+LOG_FILE="$LOG_DIR/healthcheck.log"
+TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+
+echo "[$TIMESTAMP] Starting health check..." >> "$LOG_FILE"
+
+# Check service status
+if pgrep "$SERVICE_NAME" > /dev/null; then
+    echo "[$TIMESTAMP] Process $SERVICE_NAME is running" >> "$LOG_FILE"
 else
-  echo "FAIL - ${URL} returned ${HTTP_STATUS}"
-  exit 2
+    echo "[$TIMESTAMP] ERROR: Process $SERVICE_NAME is NOT running" >> "$LOG_FILE"
+    exit 1
 fi
+
+# Check port listening
+if ss -lnt | grep -q ":$PORT"; then
+    echo "[$TIMESTAMP] Port $PORT is listening" >> "$LOG_FILE"
+else
+    echo "[$TIMESTAMP] ERROR: Port $PORT is NOT listening" >> "$LOG_FILE"
+    exit 2
+fi
+
+echo "[$TIMESTAMP] Health check PASSED" >> "$LOG_FILE"
+exit 0

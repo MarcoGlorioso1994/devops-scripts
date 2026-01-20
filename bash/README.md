@@ -18,13 +18,17 @@ Small, focused Bash scripts for common operational tasks: backups, HTTP health c
 1. Make scripts executable:
 
 ```bash
-chmod +x bash/*.sh
+chmod +x bash/*.sh 
 ```
-
+or
+```bash
+chmod +x healthcheck.sh
+```
 2. Run (example):
 
 ```bash
 ./bash/backup.sh /var/log /backups/logs-$(date +%F).tar.gz
+sudo ./healthcheck.sh
 ```
 
 3. Integrate into cron/systemd timers as needed.

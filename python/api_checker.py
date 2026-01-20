@@ -1,28 +1,41 @@
-#!/usr/bin/env python3
-"""
-api_checker.py - simple script to check API endpoints
+# This script checks the health of a specified API endpoint defined in a YAML configuration file. 
+# It logs the status code and response time in a structured JSON-like format.
 
-Usage: python api_checker.py configs/app.yaml
-"""
-import sys
 import requests
 import yaml
+import logging
+import time
+from datetime import datetime
 
+# Logging configuration (JSON-like)
+logging.basicConfig(
+    level=logging.INFO,
+    format='{"timestamp":"%(asctime)s","level":"%(levelname)s","message":"%(message)s"}'
+)
 
-def check_endpoints(config_path: str) -> None:
-    with open(config_path) as fh:
-        config = yaml.safe_load(fh)
+CONFIG_PATH = "../configs/app.yaml"
 
-    for name, url in config.get("endpoints", {}).items():
-        try:
-            r = requests.get(url, timeout=5)
-            print(f"{name}: {r.status_code} {r.reason}")
-        except Exception as e:
-            print(f"{name}: ERROR - {e}")
+def load_config(path):
+    with open(path, "r") as file:
+        return yaml.safe_load(file)
 
+def check_api(api_config):
+    url = api_config["url"]
+    timeout = api_config.get("timeout", 5)
+
+    start = time.time()
+    response = requests.get(url, timeout=timeout)
+    elapsed = round(time.time() - start, 2)
+
+    logging.info(
+        f'API={api_config["name"]} STATUS={response.status_code} TIME={elapsed}s'
+    )
+
+    response.raise_for_status()
+
+def main():
+    config = load_config(CONFIG_PATH)
+    check_api(config["api"])
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: api_checker.py <config.yaml>")
-        sys.exit(1)
-    check_endpoints(sys.argv[1])
+    main()
